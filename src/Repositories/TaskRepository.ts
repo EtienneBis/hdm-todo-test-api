@@ -13,7 +13,7 @@ export default class TaskRepository {
   async delete(id: number) {
     return this.prisma.task.delete({
       where: {
-        id,
+        id
       },
     });
   }
