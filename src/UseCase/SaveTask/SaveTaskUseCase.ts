@@ -1,32 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../index';
 import SaveTaskDto from './SaveTaskDto';
-import { PrismaService } from '../PrismaService';
 import TaskRepository from "../../Repositories/TaskRepository";
-import { Task } from '@prisma/client';
-
-
+import {Task} from "@prisma/client";
 
 @Injectable()
 export default class SaveTaskUseCase implements UseCase<Promise<Task>, [dto: SaveTaskDto]> {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private readonly taskRepository: TaskRepository) {}
 
   async handle(dto: SaveTaskDto): Promise<Task> {
-    if (!dto.name || dto.name.trim() === '') {
-      throw new Error('Task name cannot be empty');
-    }
-    
-    try {
-      const newTask = await this.prismaService.task.create({
-        data: {
-          name: dto.name,
-        },
-      });
+    if (dto.id) {
+      const data = {
+        name: dto.name,
 
-      return newTask; 
-    } catch (error) {
-      console.error('Error saving task:', error);
-      throw new Error('Error saving task');
+      };
+      return this.taskRepository.update(dto.id, data);
+    } else {
+      const data = {
+        name: dto.name,
+
+      };
+      console.log('Creating task with data:', data);
+      return this.taskRepository.create(data);
     }
   }
 }
