@@ -23,12 +23,14 @@ export default class TaskController {
 
   @Post('/tasks')
   async create(@Body() dto: SaveTaskDto) {
-    // @todo YOU MUST FOLLOW THE SAME IMPLEMENTATION AS OTHER ENDPOINTS
+    const saveTaskUseCase = await this.useCaseFactory.create(SaveTaskUseCase);
+    return saveTaskUseCase.handle(dto);
   }
 
   @Patch('/tasks/:id')
-  async update(@Body() dto: SaveTaskDto) {
-    // @todo YOU MUST FOLLOW THE SAME IMPLEMENTATION AS OTHER ENDPOINTS
+  async update(@Param('id') id: string, @Body() dto: SaveTaskDto) {
+    const updateTaskUseCase = await this.useCaseFactory.create(UpdateTaskUseCase);
+    return updateTaskUseCase.handle(Number(id), dto); 
   }
 
   @Delete('/tasks/:id')
