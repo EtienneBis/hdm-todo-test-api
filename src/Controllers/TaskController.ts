@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -11,13 +12,13 @@ import DeleteTask from '../UseCase/DeleteTask/DeleteTask';
 import GetAllTasksUseCase from '../UseCase/GetAllTasks/GetAllTasksUseCase';
 import SaveTaskDto from '../UseCase/SaveTask/SaveTaskDto';
 import UseCaseFactory from '../UseCase/UseCaseFactory';
-import SaveTaskUseCase from '../UseCase/SaveTask/SaveTaskUseCase';
-import UpdateTaskUseCase from '../UseCase/UpdateTask/UpdateTaskUseCase';
-
+import TaskRepository from "../Repositories/TaskRepository";
+import SaveTaskUseCase from "../UseCase/SaveTask/SaveTaskUseCase";
 
 @Controller()
 export default class TaskController {
-  constructor(private readonly useCaseFactory: UseCaseFactory) {}
+  constructor(private readonly useCaseFactory: UseCaseFactory,
+              private readonly taskRepository: TaskRepository,) {}
 
   @Get('/tasks')
   async getAll() {
@@ -26,18 +27,22 @@ export default class TaskController {
 
   @Post('/tasks')
   async create(@Body() dto: SaveTaskDto) {
-    const saveTaskUseCase = await this.useCaseFactory.create(SaveTaskUseCase);
-    return saveTaskUseCase.handle(dto);
+    console.log('Received task data:', dto); 
+    return (await this.useCaseFactory.create(SaveTaskUseCase)).handle(dto);
   }
 
   @Patch('/tasks/:id')
-  async update(@Param('id') id: string, @Body() dto: SaveTaskDto) {
-    const updateTaskUseCase = await this.useCaseFactory.create(UpdateTaskUseCase);
-    return updateTaskUseCase.handle(Number(id), dto); 
+  async update(@Param('id') id: string,@Body() dto: SaveTaskDto) {
+    if (!dto.name) {
+      throw new BadRequestException('The name field is required.');
+    }
+    const saveTaskUseCase = await this.useCaseFactory.create(SaveTaskUseCase);
+    dto.id = Number(id);
+    return saveTaskUseCase.handle(dto);
   }
 
   @Delete('/tasks/:id')
   async delete(@Param('id') id: string) {
-    return (await this.useCaseFactory.create(DeleteTask)).handle(Number(id));
+    return await ((await this.useCaseFactory.create(DeleteTask)).handle(Number(id)));
   }
 }
