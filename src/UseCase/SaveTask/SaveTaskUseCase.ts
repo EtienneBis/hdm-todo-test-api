@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Task } from '@prisma/client';
 import { UseCase } from '../../index';
 import SaveTaskDto from './SaveTaskDto';
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from '../PrismaService';
 
 @Injectable()
 export default class SaveTaskUseCase implements UseCase<Promise<Task>, [dto: SaveTaskDto]> {
