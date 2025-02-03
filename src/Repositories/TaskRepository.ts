@@ -12,9 +12,10 @@ export default class TaskRepository {
 
   async delete(id: number) {
     return this.prisma.task.delete({
-      where: { id: data.id },
+      where: { id },
     });
   }
+
 
 async save(
   data: Prisma.XOR<Prisma.TaskCreateInput, Prisma.TaskUncheckedCreateInput> | Prisma.XOR<Prisma.TaskUpdateInput, Prisma.TaskUncheckedUpdateInput>,
