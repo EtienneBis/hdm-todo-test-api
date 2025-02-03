@@ -1,33 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../PrismaService';
-import { Prisma, Task } from '@prisma/client';
+import {Prisma, Task} from '@prisma/client';
 
 @Injectable()
 export default class TaskRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll() {
+  async findAll(): Promise<Task[]> {
     return this.prisma.task.findMany();
   }
 
   async delete(id: number) {
     return this.prisma.task.delete({
-      where: { id },
+      where: {
+        id
+      },
     });
   }
 
-
-async save(
-  data: Prisma.XOR<Prisma.TaskCreateInput, Prisma.TaskUncheckedCreateInput> | Prisma.XOR<Prisma.TaskUpdateInput, Prisma.TaskUncheckedUpdateInput>,
-): Promise<Task> {
-  if (!data.id) {
+  async create(data: Prisma.TaskCreateInput | Prisma.TaskUncheckedCreateInput): Promise<Task> {
     return this.prisma.task.create({
       data,
     });
   }
-  return this.prisma.task.update({
-    where: { id: data.id },
-    data,
-  });
+  async update(id: number, data: Prisma.TaskUpdateInput | Prisma.TaskUncheckedUpdateInput): Promise<Task> {
+    return this.prisma.task.update({
+      where: {id},
+      data,
+    });
+  }
 }
-
