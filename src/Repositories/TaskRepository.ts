@@ -9,7 +9,6 @@ export default class TaskRepository {
   async findAll(): Promise<Task[]> {
     return this.prisma.task.findMany();
   }
-
   async delete(id: number) {
     return this.prisma.task.delete({
       where: {
@@ -17,7 +16,6 @@ export default class TaskRepository {
       },
     });
   }
-
   async create(data: Prisma.TaskCreateInput | Prisma.TaskUncheckedCreateInput): Promise<Task> {
     return this.prisma.task.create({
       data,
